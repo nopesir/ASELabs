@@ -137,9 +137,7 @@ quintuplo RN 5
 				ADD quadruplo, triplo, valore
 				ADD quintuplo, quadruplo, valore
 				
-				
-				
-stop B stop ;stop program
+stop 			B stop ;stop program
 				
                 ENDP
 

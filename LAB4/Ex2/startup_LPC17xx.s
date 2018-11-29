@@ -129,38 +129,47 @@ myArea_p
 
 Reset_Handler   PROC
                 EXPORT  Reset_Handler             [WEAK]
+					
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; LAB04 EX2
+;
+; Implementation of <USAD8 r5, r0, r1>.				
+; In this code is used the RAM as a temporary storage. It could
+; be possible to use only registers (they're used in the Ex3 of
+; the same lab in order to exploit two different approaches).
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
            
 op1				RN 0
 op2				RN 1
 areaindex		RN 3
-res				RN 4
-counter			RN 5
+counter			RN 4
+res				RN 5
 
-				LDR areaindex, =myArea_p
-				MOV r11, #0
+				LDR areaindex, =myArea_p	
+				MOV r11, #0					
 				
-				LDR op1, =0x7030458D
-				LDR op2, =0x03159EAA
+				LDR op1, =0x7030458D		; Load first operand
+				LDR op2, =0x03159EAA		; and the second one
 				
-				STR op1, [areaindex], #4
-				STR op2, [areaindex], #4
+				STR op1, [areaindex], #4	; Store it in the RAM, the increment by a WORD
+				STR op2, [areaindex], #4	; ----
 				
 				MOV counter, #3
 
 loop
-				LDRB r6, [areaindex, #-8]
+				LDRB r6, [areaindex, #-8]	; Read byte-by-byte from the RAM
 				LDRB r7, [areaindex, #-4]
 				
-				SUBS res, r6, r7
-				NEGMI res, res
-goahead
-				STRB res, [areaindex], #1
+				SUBS res, r6, r7			; Caculate the absolute 
+				NEGMI res, res				; value of the sub
+
+				STRB res, [areaindex], #1	; Store it in the corresponding cell
 				
 				CBZ counter, result
 				ADD counter, #-1
 				B loop	
 				
-result
+result			; Do the summation over the single bytes
 				MOV res, #0
 				LDRB r12, [areaindex, #-4]
 				ADD res, res, r12

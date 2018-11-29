@@ -124,6 +124,17 @@ CRP_Key         DCD     0xFFFFFFFF
 
 Reset_Handler   PROC
                 EXPORT  Reset_Handler             [WEAK]
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; LAB04 EX3
+;
+; Implementation of <SMUAD r6, r0, r1> and <SMUSD r7, r0, r1>.				
+; In this code are only used registers as memory. It could
+; be possible to use the RAM too (it's used in the Ex1/Ex2 of
+; the same lab in order to exploit two different approaches).
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 							
 ; Registers renaming
 OpA				RN 0
