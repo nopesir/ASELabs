@@ -167,7 +167,7 @@ B_index			RN 4
 C_index			RN 5
 
 
-				MOV M_index, #M 					; M value used to cycle
+				MOV M_index, #M						; M value used to cycle
 				MOV N_index, #N 					; N value used to cycle
 				MOV P_index, #P 					; P value used to cycle
 				
@@ -193,8 +193,8 @@ loop												; Loop on the matrix M
 				
 				CBZ M_index, change_row				; If the counter of the column is zero, change row
 				B loop								; Else do another loop
-
-repeat_row	
+				
+repeat_row											; As it says
 				TEQ r9, #0x00000000					; Check if the MSB is 0
 				TEQNE r9, #0xFFFFFFFF				; Else check if the MSB is -1
 				
@@ -217,7 +217,7 @@ repeat_row
 				
 				B loop								; Go to the loop
 
-change_row				
+change_row											; As it says
 				ADD P_index, #-1					; Decrement P value
 				CMP P_index, #0						; Compare P with zero value
 				BNE repeat_row						; If P is not zero, repeat the row
