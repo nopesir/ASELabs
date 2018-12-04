@@ -143,6 +143,21 @@ P				EQU		2
 
 Reset_Handler   PROC
                 EXPORT  Reset_Handler             [WEAK]
+					
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Si scriva un programma in Assembly ARM in grado di moltiplicare    ;
+; due matrici. La prima matrice ha N righe e M colonne. La seconda   ;
+; matrice ha M righe e P colonne. La matrice risultato ha N righe    ;
+; e P colonne. Tutte le matrici contengono numeri con segno espressi ;
+; su una word. N, M, P sono costanti da definire con EQU.            ;
+; Le prime due matrici sono definite come costanti in un’area di     ;
+; memoria READONLY. La terza matrice deve essere allocata in un’area ; 
+; DATA READWRITE. Le somme intermedie devono essere calcolate su due ; 
+; word. Al termine di un prodotto riga*colonna, si controlla la word ; 
+; più significativa della somma parziale. In caso di overflow,       ;
+; occorre memorizzare come risultato il massimo numero (positivo o   ;
+; negativo, in base al tipo di overflow) esprimibile su una word.    ; 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
                 
 M_index			RN 0
 N_index			RN 1
@@ -152,83 +167,84 @@ B_index			RN 4
 C_index			RN 5
 
 
-				MOV M_index, #M
-				MOV N_index, #N
-				MOV P_index, #P ; Variable P_index
+				MOV M_index, #M 					; M value used to cycle
+				MOV N_index, #N 					; N value used to cycle
+				MOV P_index, #P 					; P value used to cycle
 				
-				LDR A_index, =A_p
-				LDR B_index, =B_p
-				LDR C_index, =C_p
-				MOV r8, #0
-				MOV r9, #0
-				MOV r10, #0
-				MOV r11, P_index ; Constant P_index
+				LDR A_index, =A_p					; Pointer to the memory of matrix A	
+				LDR B_index, =B_p					; Pointer to the memory of matrix B
+				LDR C_index, =C_p					; Pointer to the memory of matrix C (result)
+				MOV r8, #0							; Reset r8
+				MOV r9, #0							; Reset r9
+				MOV r10, #0							; Reset r10
+				MOV r11, P_index 					; P value used as a constant
 				
-loop	
-				ADD M_index, #-1
-				LDR r6, [A_index], #4
+loop												; Loop on the matrix M	
+				ADD M_index, #-1					; Decrement the M value
+				LDR r6, [A_index], #4				; Take the 32bit integer from A, and post-increment at the second one
 				
-				LDR r7, [B_index]
-				ADD B_index, B_index, r11, LSL #2
+				LDR r7, [B_index]					; Take the 32bit integer from B
+				ADD B_index, B_index, r11, LSL #2	; Increment the matrix B in order to retrieve the element on the same column
 				
-				SMULL r6, r7, r6, r7
+				SMULL r6, r7, r6, r7				; Multiply the two elements on 64bit
 				
-				ADDS r8, r8, r6
-				ADC r9, r9, r7
+				ADDS r8, r8, r6						; Add on 64bit the LSB 
+				ADC r9, r9, r7						; And the the MSB
 				
-				CBZ M_index, change_row
-				B loop
+				CBZ M_index, change_row				; If the counter of the column is zero, change row
+				B loop								; Else do another loop
 
 repeat_row	
-				TEQ r9, #0x00000000
-				TEQNE r9, #0xFFFFFFFF
+				TEQ r9, #0x00000000					; Check if the MSB is 0
+				TEQNE r9, #0xFFFFFFFF				; Else check if the MSB is -1
 				
-				STREQ r8, [C_index], #4
-				ADDSNE r9, r9, #0
+				STREQ r8, [C_index], #4				; If it's 0, store the MSB (r8) to C_index, than increment the pointer
+				ADDSNE r9, r9, #0					; Else update the special register r9 with the S
 				
-				LDRPL r8, =0x7FFFFFFF
-				LDRMI r8, =0x80000000
+				LDRPL r8, =0x7FFFFFFF				; Since there's overflow, if r9 is positive, load that in r8
+				LDRMI r8, =0x80000000				; Since there's overflow, if r9 is negative, load that in r8
 				
-				STRNE r8, [C_index], #4
+				STRNE r8, [C_index], #4				; Store the r8 value and then increment
 				
-				MOV r8, #0
-				MOV r9, #0
+				MOV r8, #0							; Reset r8
+				MOV r9, #0							; Reset r9
 				
-				LDR B_index, =B_p
-				ADD B_index, B_index, #4
-				LDR M_index, =M
-				LDR A_index, =A_p
-				ADD A_index, A_index, r10, LSL #4
+				LDR B_index, =B_p					; Reload the matrix B pointer in B_index
+				ADD B_index, B_index, #4			; Increment it by one position	
+				LDR M_index, =M						; Reload the M counter
+				LDR A_index, =A_p					; Reload the matrix A pointer in A_index
+				ADD A_index, A_index, r10, LSL #4	; Increment the pointer to A_index by r10 positions (r10 has the number of rows of A passed)
 							
-				B loop
+				B loop								; Go to the loop	
 
 change_row				
-				ADD P_index, #-1
-				CMP P_index, #0
-				BNE repeat_row
-				MOV P_index, #P
-				ADD N_index, #-1
-				ADD r10, r10, #1
-				LDR M_index, =M
-				LDR B_index, =B_p
+				ADD P_index, #-1					; Decrement P value
+				CMP P_index, #0						; Compare P with zero value
+				BNE repeat_row						; If P is not zero, repeat the row
+				MOV P_index, #P						; Reload P value	
+				ADD N_index, #-1					; Decrement the N index
+				ADD r10, r10, #1					; Since N is decrement, increment r10
+				LDR M_index, =M						; Reload M value
+				LDR B_index, =B_p					; Reload the matrix B pointer in B_index
 				
-				TEQ r9, #0x00000000
-				TEQNE r9, #0xFFFFFFFF
+				TEQ r9, #0x00000000					; Check if the MSB is 0
+				TEQNE r9, #0xFFFFFFFF				; Else check if the MSB is -1
 
 				
 				
-				STREQ r8, [C_index], #4
-				ADDSNE r9, r9, #0
+				STREQ r8, [C_index], #4				; If it's 0, store the MSB (r8) to C_index, than increment the pointer
+				ADDSNE r9, r9, #0					; Else update the special register r9 with the S
 				
-				LDRPL r8, =0x7FFFFFFF
-				LDRMI r8, =0x80000000
+				LDRPL r8, =0x7FFFFFFF				; Since there's overflow, if r9 is positive, load that in r8	
+				LDRMI r8, =0x80000000				; Since there's overflow, if r9 is negative, load that in r8
 				
-				STRNE r8, [C_index], #4
+				STRNE r8, [C_index], #4				; Store the r8 value and then increment the pointer
 				
-				MOV r8, #0
-				MOV r9, #0
-				CBZ N_index, stop
-				B loop
+				MOV r8, #0							; Reset r8
+				MOV r9, #0							; Reset r9
+				CBZ N_index, stop					; If the rows are finished, STOP
+				B loop								; Else go to the loop
+				
 			
 stop B stop
 
