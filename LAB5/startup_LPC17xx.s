@@ -143,7 +143,7 @@ P				EQU		2
 
 Reset_Handler   PROC
                 EXPORT  Reset_Handler             [WEAK]
-					
+				
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Si scriva un programma in Assembly ARM in grado di moltiplicare    ;
 ; due matrici. La prima matrice ha N righe e M colonne. La seconda   ;
@@ -151,12 +151,12 @@ Reset_Handler   PROC
 ; e P colonne. Tutte le matrici contengono numeri con segno espressi ;
 ; su una word. N, M, P sono costanti da definire con EQU.            ;
 ; Le prime due matrici sono definite come costanti in un’area di     ;
-; memoria READONLY. La terza matrice deve essere allocata in un’area ; 
-; DATA READWRITE. Le somme intermedie devono essere calcolate su due ; 
-; word. Al termine di un prodotto riga*colonna, si controlla la word ; 
+; memoria READONLY. La terza matrice deve essere allocata in un’area ;
+; DATA READWRITE. Le somme intermedie devono essere calcolate su due ;
+; word. Al termine di un prodotto riga*colonna, si controlla la word ;
 ; più significativa della somma parziale. In caso di overflow,       ;
 ; occorre memorizzare come risultato il massimo numero (positivo o   ;
-; negativo, in base al tipo di overflow) esprimibile su una word.    ; 
+; negativo, in base al tipo di overflow) esprimibile su una word.    ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
                 
 M_index			RN 0
@@ -171,7 +171,7 @@ C_index			RN 5
 				MOV N_index, #N 					; N value used to cycle
 				MOV P_index, #P 					; P value used to cycle
 				
-				LDR A_index, =A_p					; Pointer to the memory of matrix A	
+				LDR A_index, =A_p					; Pointer to the memory of matrix A
 				LDR B_index, =B_p					; Pointer to the memory of matrix B
 				LDR C_index, =C_p					; Pointer to the memory of matrix C (result)
 				MOV r8, #0							; Reset r8
@@ -179,7 +179,7 @@ C_index			RN 5
 				MOV r10, #0							; Reset r10
 				MOV r11, P_index 					; P value used as a constant
 				
-loop												; Loop on the matrix M	
+loop												; Loop on the matrix M
 				ADD M_index, #-1					; Decrement the M value
 				LDR r6, [A_index], #4				; Take the 32bit integer from A, and post-increment at the second one
 				
@@ -188,7 +188,7 @@ loop												; Loop on the matrix M
 				
 				SMULL r6, r7, r6, r7				; Multiply the two elements on 64bit
 				
-				ADDS r8, r8, r6						; Add on 64bit the LSB 
+				ADDS r8, r8, r6						; Add on 64bit the LSB
 				ADC r9, r9, r7						; And the the MSB
 				
 				CBZ M_index, change_row				; If the counter of the column is zero, change row
@@ -210,18 +210,18 @@ repeat_row
 				MOV r9, #0							; Reset r9
 				
 				LDR B_index, =B_p					; Reload the matrix B pointer in B_index
-				ADD B_index, B_index, #4			; Increment it by one position	
+				ADD B_index, B_index, #4			; Increment it by one position
 				LDR M_index, =M						; Reload the M counter
 				LDR A_index, =A_p					; Reload the matrix A pointer in A_index
 				ADD A_index, A_index, r10, LSL #4	; Increment the pointer to A_index by r10 positions (r10 has the number of rows of A passed)
-							
-				B loop								; Go to the loop	
+				
+				B loop								; Go to the loop
 
 change_row				
 				ADD P_index, #-1					; Decrement P value
 				CMP P_index, #0						; Compare P with zero value
 				BNE repeat_row						; If P is not zero, repeat the row
-				MOV P_index, #P						; Reload P value	
+				MOV P_index, #P						; Reload P value
 				ADD N_index, #-1					; Decrement the N index
 				ADD r10, r10, #1					; Since N is decrement, increment r10
 				LDR M_index, =M						; Reload M value
@@ -235,7 +235,7 @@ change_row
 				STREQ r8, [C_index], #4				; If it's 0, store the MSB (r8) to C_index, than increment the pointer
 				ADDSNE r9, r9, #0					; Else update the special register r9 with the S
 				
-				LDRPL r8, =0x7FFFFFFF				; Since there's overflow, if r9 is positive, load that in r8	
+				LDRPL r8, =0x7FFFFFFF				; Since there's overflow, if r9 is positive, load that in r8
 				LDRMI r8, =0x80000000				; Since there's overflow, if r9 is negative, load that in r8
 				
 				STRNE r8, [C_index], #4				; Store the r8 value and then increment the pointer
