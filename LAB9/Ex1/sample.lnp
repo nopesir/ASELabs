@@ -4,6 +4,7 @@
 ".\core_cm3.o"
 ".\system_lpc17xx.o"
 ".\lib_led.o"
+".\funct_led.o"
 ".\irq_button.o"
 ".\lib_button.o"
 --strict --scatter ".\sample.sct"

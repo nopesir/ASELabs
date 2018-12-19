@@ -450,6 +450,11 @@
               <FileType>5</FileType>
               <FilePath>.\led\led.h</FilePath>
             </File>
+            <File>
+              <FileName>funct_led.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\led\funct_led.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

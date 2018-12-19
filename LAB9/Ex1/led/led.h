@@ -12,7 +12,9 @@
 void LED_init(void);
 void LED_deinit(void);
 
-/* funct_led */
+/* func_led (Ex 1 to Ex 5) */
 void led4and11_On(void);
-
-
+void voidled4_Off(void);
+void ledEvenOn_OddOf(void);
+void LED_On(unsigned int num);
+void LED_Off(unsigned int num);

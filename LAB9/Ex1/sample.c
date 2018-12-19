@@ -24,6 +24,8 @@ int main (void) {
   LED_init();                           /* LED Initialization                 */
 	
   BUTTON_init();												/* BUTTON Initialization              */
+	
+	LED_On(0);
 
   while (1) {                           /* Loop forever                       */	
   }

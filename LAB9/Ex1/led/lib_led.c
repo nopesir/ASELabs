@@ -15,8 +15,6 @@
   Function that initializes LEDs and switch them off
  *----------------------------------------------------------------------------*/
 
-
-
 void LED_init(void) {
 
   LPC_PINCON->PINSEL4 &= 0xFFFF0000;	//PIN mode GPIO (00b value per p2.0 p2.1 p2.2 p2.3 
