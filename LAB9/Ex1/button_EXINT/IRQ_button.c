@@ -8,7 +8,8 @@
 void EINT0_IRQHandler (void)	  
 {
   LPC_SC->EXTINT = (1 << 0);     /* clear pending interrupt         */
-	LPC_GPIO2->FIOPIN = (1 << 7);
+	LPC_GPIO2->FIOPIN = 0x00000000;
+	LPC_GPIO2->FIOPIN = (1 << 3);
 
 }
 

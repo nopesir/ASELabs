@@ -25,7 +25,7 @@ int main (void) {
 	
   BUTTON_init();												/* BUTTON Initialization              */
 	
-	LED_On(0);
+	LED_On(4);
 
   while (1) {                           /* Loop forever                       */	
   }
