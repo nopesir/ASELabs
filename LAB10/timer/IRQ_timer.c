@@ -16,6 +16,7 @@ int moves[255];
 int i;
 int j;
 int n;
+int flag = 0;
 
 
 /******************************************************************************
@@ -37,7 +38,7 @@ void TIMER0_IRQHandler (void)
 		
 		int sel = LPC_TIM1->TC % 3;
 		LED_On(sel);
-		moves[i] = sel;
+		moves[i/2] = sel;
 		i++;
 		enable_timer(0);
 		
@@ -45,7 +46,7 @@ void TIMER0_IRQHandler (void)
 		
 		LPC_GPIO2->FIOCLR = 0x000000FF;
 		
-		if(i < n) {
+		if( (i+1)/2 < n) {
 			i++;
 			enable_timer(0);
 		}
