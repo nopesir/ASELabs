@@ -161,7 +161,7 @@
         <Mm>
           <WinNumber>1</WinNumber>
           <SubType>0</SubType>
-          <ItemText>0x10000218</ItemText>
+          <ItemText>0x10000009</ItemText>
         </Mm>
       </MemoryWindow1>
       <Tracepoint>
@@ -210,10 +210,10 @@
       <FileType>2</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>16</ColumnNumber>
+      <ColumnNumber>26</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>270</TopLine>
-      <CurrentLine>278</CurrentLine>
+      <TopLine>421</TopLine>
+      <CurrentLine>430</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\startup_LPC17xx.s</PathWithFileName>
       <FilenameWithoutPath>startup_LPC17xx.s</FilenameWithoutPath>

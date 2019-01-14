@@ -124,6 +124,17 @@ myArea_mem		SPACE	myArea_size
 myArea_p
 
 
+N				EQU		0x00000003
+N_sq			EQU		0x00000009
+				
+				AREA 	myVec, READWRITE
+myVec_mem		SPACE	N_sq
+myVec_p
+
+
+
+
+
                 AREA    |.text|, CODE, READONLY
 
 
@@ -144,15 +155,36 @@ Reset_Handler   PROC
 				;BL myUSAD8
 				;LDR r5, [r6]
 				
+				; Ex3A
+				;PUSH {r0,r1,r6}
+				;BL mySMUAD
+				;POP {r0,r1,r6}
+				
+				
+				; Ex3B
+				;PUSH {r0,r1,r7}
+				;BL mySMUSD
+				;POP {r0,r1,r7}
+				
+				; Ex4
+				LDR r0, =matrix
+				LDR r1, =N
+				
+				PUSH {r0-r2}
+				BL magicSquare
+				POP {r0-r2}
+				
+stop			B stop				
+
+matrix			DCB 4,9,2,3,5,7,8,1,6
+
                 ENDP
 					
 					
 					
 					
 myUADD8			PROC
-				
 				PUSH {r0,r1,LR}
-				
 				LSR r2, r0, #24
 				LSR r3, r1, #24
 				
@@ -216,7 +248,7 @@ myUADD8			PROC
 
 myUSAD8			PROC
 				
-				PUSH {r0-r12,LR}
+				PUSH {r0-r6,LR}
 	
 				LDMIA r6, {r0,r1}
 				
@@ -226,7 +258,7 @@ myUSAD8			PROC
 				LSR r3, r1, #24
 				
 				SUBS r5, r2, r3			; Caculate the absolute 
-				NEGMI r5, r5				; value of the sub
+				NEGMI r5, r5			; value of the sub
 				
 				ADD r4, r4, r5
 				
@@ -238,7 +270,7 @@ myUSAD8			PROC
 				LSR r3, r3, #24
 				
 				SUBS r5, r2, r3			; Caculate the absolute 
-				NEGMI r5, r5				; value of the sub
+				NEGMI r5, r5			; value of the sub
 				
 				LSL r5, r5, #24
 				LSR r5, r5, #24
@@ -253,7 +285,7 @@ myUSAD8			PROC
 				LSR r3, r3, #24
 				
 				SUBS r5, r2, r3			; Caculate the absolute 
-				NEGMI r5, r5				; value of the sub
+				NEGMI r5, r5			; value of the sub
 				
 				LSL r5, r5, #24
 				LSR r5, r5, #24
@@ -268,7 +300,7 @@ myUSAD8			PROC
 				LSR r3, r3, #24
 				
 				SUBS r5, r2, r3			; Caculate the absolute 
-				NEGMI r5, r5				; value of the sub
+				NEGMI r5, r5			; value of the sub
 				
 				LSL r5, r5, #24
 				LSR r5, r5, #24
@@ -277,13 +309,158 @@ myUSAD8			PROC
 				
 				STMIA r6, {r4}
 				
+				POP {r0-r6,PC}
 				
-				POP {r0-r12,PC}
+				ENDP
+					
+					
+mySMUAD			PROC
+				
+				PUSH{r0-r9,LR}
+				LDR r0, [sp, #44]
+				LDR r1, [sp, #48]
+				
+				MOV r7, #0 							; INIT to 0
+														
+				ASR r2, r0, #16						; Shift arithmetically right and save in OpB
+				MOV r0, r0, LSL #16					; Shift logically left
+				MOV r0, r0, ASR #16					; and then arithmetically right 
+														; to take the first MSB halfword
+				
+				ASR r3, r1, #16						; Do the same with OpD and OpC
+				MOV r1, r1, LSL #16
+				MOV r1, r1, ASR #16
+				
+				MUL r4, r0, r1						; Multiply the first pair of halfword
+				MUL r5, r2, r3						; and the second one
+					
+				
+				ADD r6, r6, r4		
+				ADD r6, r6, r5
+				
+				STR r6, [sp, #52]
+				
+				POP{r0-r9,PC}
+				
+				ENDP
+					
+mySMUSD			PROC
+				
+				PUSH{r0-r9,LR}
+				LDR r0, [sp, #44]
+				LDR r1, [sp, #48]
+				
+				MOV r7, #0 							; INIT to 0
+														
+				ASR r2, r0, #16						; Shift arithmetically right and save in OpB
+				MOV r0, r0, LSL #16					; Shift logically left
+				MOV r0, r0, ASR #16					; and then arithmetically right 
+														; to take the first MSB halfword
+				
+				ASR r3, r1, #16						; Do the same with OpD and OpC
+				MOV r1, r1, LSL #16
+				MOV r1, r1, ASR #16
+				
+				MUL r4, r0, r1						; Multiply the first pair of halfword
+				MUL r5, r2, r3						; and the second one
+					
+				
+				ADD r6, r6, r4		
+				SUB r6, r6, r5
+				
+				STR r6, [sp, #52]
+				
+				POP{r0-r9,PC}
 				
 				ENDP
 	
-	
+
+magicSquare		PROC
 				
+				PUSH {r0-r12, LR}
+				MOV r2, #1
+				LDR r0, [sp, #56]
+				LDR r1, [sp, #60]
+				MUL r1, r1, r1
+				LDR r3, =myVec_p
+				
+loop_one				
+				SUB r1, r1, #1
+				LDRB r4, [r0], #1
+				SUB	r4, r4, #1
+				STRB r2, [r3, r4]
+				CMP r1, #0
+				BNE loop_one
+				
+				LDR r0, [sp, #56]
+				LDR r1, [sp, #60]
+				MUL r1, r1, r1
+				MOV r4, #0
+				
+loop_two
+				SUB r1, r1, #1
+				LDRB r2, [r3], #1
+				ADD r4, r4, r2
+				CMP r1, #0
+				BNE loop_two
+				
+				LDR r0, [sp, #56]
+				LDR r1, [sp, #60]
+				MUL r1, r1, r1
+				MOV r5, r1
+				
+				CMP r4, r1
+				BNE end_bad
+				
+				LDR r3, =myVec_p
+
+loop_three
+				SUB r1, r1, #1
+				LDRB r2, [r3], #1
+				CMP r2, r5
+				BGT end_bad
+				CMP r2, #1
+				BLT	end_bad
+				CMP r1, #0
+				BNE loop_three
+				
+				LDR r0, [sp, #56]
+				LDR r1, [sp, #60]
+				MUL r1, r1, r1
+				B end_good
+				
+
+; To finish the last check on magic number
+				
+				
+				
+				
+end_bad
+				MOV r12, #0
+				STR r12, [sp, #64]
+				B end_end
+				
+end_good		
+				MOV r12, #1
+				STR r12, [sp, #64]
+				
+end_end
+				POP {r0-r12, PC}
+				
+				ENDP
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ; Dummy Exception Handlers (infinite loops which can be modified)
