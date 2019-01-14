@@ -115,6 +115,13 @@ __Vectors       DCD     __initial_sp              ; Top of Stack
                 AREA    |.ARM.__at_0x02FC|, CODE, READONLY
 CRP_Key         DCD     0xFFFFFFFF
                 ENDIF
+					
+					
+myArea_size		EQU		0x00000018
+				
+				AREA 	myArea, NOINIT, READWRITE
+myArea_mem		SPACE	myArea_size
+myArea_p
 
 
                 AREA    |.text|, CODE, READONLY
@@ -125,7 +132,17 @@ CRP_Key         DCD     0xFFFFFFFF
 Reset_Handler   PROC
                 EXPORT  Reset_Handler             [WEAK]
                 
+				LDR r0, =0x7A30458D
+				LDR r1, =0xC3159EAA
 				
+				; Ex1
+				;BL myUADD8				
+				
+				; Ex2
+				;LDR r6, =myArea_p
+				;STMIA r6, {r0, r1}
+				;BL myUSAD8
+				;LDR r5, [r6]
 				
                 ENDP
 					
@@ -134,13 +151,139 @@ Reset_Handler   PROC
 					
 myUADD8			PROC
 				
-				PUSH{r0,r1,r4, LR}
+				PUSH {r0,r1,LR}
 				
+				LSR r2, r0, #24
+				LSR r3, r1, #24
 				
+				ADD r5, r2, r3
 				
-	
+				LSL r5, r5, #24
+				LSR r5, r5, #24
+				
+				LSL r4, r4, #8
+				ADD r4, r4, r5
+				
+				LSR r2, r0, #16
+				LSL	r2, r2, #24
+				LSR r2, r2, #24
+				LSR r3, r1, #16
+				LSL	r3, r3, #24
+				LSR r3, r3, #24
+				
+				ADD r5, r2, r3
+				
+				LSL r5, r5, #24
+				LSR r5, r5, #24
+				
+				LSL r4, r4, #8
+				ADD r4, r4, r5
+				
+				LSR r2, r0, #8
+				LSL	r2, r2, #24
+				LSR r2, r2, #24
+				LSR r3, r1, #8
+				LSL	r3, r3, #24
+				LSR r3, r3, #24
+				
+				ADD r5, r2, r3
+				
+				LSL r5, r5, #24
+				LSR r5, r5, #24
+				
+				LSL r4, r4, #8
+				ADD r4, r4, r5
+				
+				MOV r2, r0
+				LSL	r2, r2, #24
+				LSR r2, r2, #24
+				MOV r3, r1
+				LSL	r3, r3, #24
+				LSR r3, r3, #24
+				
+				ADD r5, r2, r3
+				
+				LSL r5, r5, #24
+				LSR r5, r5, #24
+				
+				LSL r4, r4, #8
+				ADD r4, r4, r5
+				
+				POP {r0,r1,PC}
 	
 				ENDP
+					
+
+myUSAD8			PROC
+				
+				PUSH {r0-r12,LR}
+	
+				LDMIA r6, {r0,r1}
+				
+				MOV r4, #0
+				
+				LSR r2, r0, #24
+				LSR r3, r1, #24
+				
+				SUBS r5, r2, r3			; Caculate the absolute 
+				NEGMI r5, r5				; value of the sub
+				
+				ADD r4, r4, r5
+				
+				LSR r2, r0, #16
+				LSL	r2, r2, #24
+				LSR r2, r2, #24
+				LSR r3, r1, #16
+				LSL	r3, r3, #24
+				LSR r3, r3, #24
+				
+				SUBS r5, r2, r3			; Caculate the absolute 
+				NEGMI r5, r5				; value of the sub
+				
+				LSL r5, r5, #24
+				LSR r5, r5, #24
+				
+				ADD r4, r4, r5
+				
+				LSR r2, r0, #8
+				LSL	r2, r2, #24
+				LSR r2, r2, #24
+				LSR r3, r1, #8
+				LSL	r3, r3, #24
+				LSR r3, r3, #24
+				
+				SUBS r5, r2, r3			; Caculate the absolute 
+				NEGMI r5, r5				; value of the sub
+				
+				LSL r5, r5, #24
+				LSR r5, r5, #24
+				
+				ADD r4, r4, r5
+				
+				MOV r2, r0
+				LSL	r2, r2, #24
+				LSR r2, r2, #24
+				MOV r3, r1
+				LSL	r3, r3, #24
+				LSR r3, r3, #24
+				
+				SUBS r5, r2, r3			; Caculate the absolute 
+				NEGMI r5, r5				; value of the sub
+				
+				LSL r5, r5, #24
+				LSR r5, r5, #24
+				
+				ADD r4, r4, r5
+				
+				STMIA r6, {r4}
+				
+				
+				POP {r0-r12,PC}
+				
+				ENDP
+	
+	
+				
 
 
 ; Dummy Exception Handlers (infinite loops which can be modified)
