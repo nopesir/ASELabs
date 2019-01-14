@@ -115,12 +115,6 @@ __Vectors       DCD     __initial_sp              ; Top of Stack
                 AREA    |.ARM.__at_0x02FC|, CODE, READONLY
 CRP_Key         DCD     0xFFFFFFFF
                 ENDIF
-					
-myArea_size		EQU		0x00000018
-				
-				AREA 	myArea, NOINIT, READWRITE
-myArea_mem		SPACE	myArea_size
-myArea_p
 
 
                 AREA    |.text|, CODE, READONLY
@@ -131,122 +125,22 @@ myArea_p
 Reset_Handler   PROC
                 EXPORT  Reset_Handler             [WEAK]
                 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; LAB04 EX1
-;
-; Implementation of <UADD8 r4, r0, r1>.				
-; In this code is used the RAM as a temporary storage. It could
-; be possible to use only registers (they're used in the Ex2 of
-; the same lab in order to exploit two different approaches).
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-
-;op1				RN 0
-;op2				RN 1
-;areaindex			RN 3
-;res				RN 4
-;counter			RN 5
-;
-;				LDR areaindex, =myArea_p	; Takes the index of the first byte in myArea_p
-;				
-;				LDR op1, =0x7A30458D		; Set the two operands
-;				LDR op2, =0xC3159EAA
-;				
-;				STR op1, [areaindex], #4	; Store first, increment by a WORD
-;				STR op2, [areaindex], #4	; Store second, increment by a WORD
-;				
-;				MOV counter, #3				
-;
-;loop										; Loop byte-by-byte over the myArea_p
-;				LDRB r6, [areaindex, #-8]	; Load first byte pre-incremented without update
-;				LDRB r7, [areaindex, #-4]	; Load second one in the same way
-;				
-;				ADD	res, r6, r7
-;				
-;				STRB res, [areaindex], #1	; Store the result and then increment
-;				
-;				CBZ counter, result
-;				ADD counter, #-1			
-;				B loop	
-;				
-;result
-;				LDR res, [areaindex, #-4]	; Load the result in the final register
-;
-
-op1				RN 4
-op2				RN 0
-temp1			RN 2
-temp2			RN 3
-temp3			RN 5
-res				RN 1
-
-
-				LDR op1, =0x7A30458D
-				LDR op2, =0xC3159EAA
-				
-				
-				LSR temp1, op1, #24
-				LSR temp2, op2, #24
-				
-				ADD temp3, temp1, temp2
-				
-				LSL temp3, temp3, #24
-				LSR temp3, temp3, #24
-				
-				LSL res, res, #8
-				ADD res, res, temp3
-				
-				LSR temp1, op1, #16
-				LSL	temp1, temp1, #24
-				LSR temp1, temp1, #24
-				LSR temp2, op2, #16
-				LSL	temp2, temp2, #24
-				LSR temp2, temp2, #24
-				
-				ADD temp3, temp1, temp2
-				
-				LSL temp3, temp3, #24
-				LSR temp3, temp3, #24
-				
-				LSL res, res, #8
-				ADD res, res, temp3
-				
-				LSR temp1, op1, #8
-				LSL	temp1, temp1, #24
-				LSR temp1, temp1, #24
-				LSR temp2, op2, #8
-				LSL	temp2, temp2, #24
-				LSR temp2, temp2, #24
-				
-				ADD temp3, temp1, temp2
-				
-				LSL temp3, temp3, #24
-				LSR temp3, temp3, #24
-				
-				LSL res, res, #8
-				ADD res, res, temp3
-				
-				MOV temp1, op1
-				LSL	temp1, temp1, #24
-				LSR temp1, temp1, #24
-				MOV temp2, op2
-				LSL	temp2, temp2, #24
-				LSR temp2, temp2, #24
-				
-				ADD temp3, temp1, temp2
-				
-				LSL temp3, temp3, #24
-				LSR temp3, temp3, #24
-				
-				LSL res, res, #8
-				ADD res, res, temp3
-
-
-stop B stop
-				
 				
 				
                 ENDP
+					
+					
+					
+					
+myUADD8			PROC
+				
+				PUSH{r0,r1,r4, LR}
+				
+				
+				
+	
+	
+				ENDP
 
 
 ; Dummy Exception Handlers (infinite loops which can be modified)
