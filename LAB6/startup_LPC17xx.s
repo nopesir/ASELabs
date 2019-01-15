@@ -184,7 +184,8 @@ matrix			DCB 4,9,2,3,5,7,8,1,6
 					
 					
 myUADD8			PROC
-				PUSH {r0,r1,LR}
+	
+				PUSH{r0,r1,LR}
 				LSR r2, r0, #24
 				LSR r3, r1, #24
 				
@@ -241,7 +242,7 @@ myUADD8			PROC
 				LSL r4, r4, #8
 				ADD r4, r4, r5
 				
-				POP {r0,r1,PC}
+				POP{r0,r1,PC}
 	
 				ENDP
 					
@@ -426,15 +427,76 @@ loop_three
 				
 				LDR r0, [sp, #56]
 				LDR r1, [sp, #60]
+				MOV r5, r1
+				MOV r6, r5
+				SUB r6, #1
+				;B end_good
+				
+				; Calculate M
 				MUL r1, r1, r1
-				B end_good
+				ADD r1, #1
+				MUL r1, r1, r5
+				LSR r1, #1
+				MOV r4, #0
+				MOV r7, #0
+				B loop_four
 				
+loop_out
+				SUB r6, r6, #1
+				LDR r5, [sp, #60]
+				MOV r4, #0
 
-; To finish the last check on magic number
+loop_four
+				SUB r5, r5, #1
+				LDRB r2, [r0], #1
+				ADD r4, r4, r2
+				CMP r5, r6
+				ADDEQ r7, r7, r2
+				CMP r5, #0
+				BNE loop_four
+				CMP r4, r1
+				BNE end_bad
+				CMP r6, #0
+				BNE loop_out
+				CMP r7, r1
+				BNE end_bad
 				
-				
-				
-				
+				; Start from the top-right element
+				LDR r0, [sp, #56]
+				LDR r5, [sp, #60]
+				ADD r0, r0, r5
+				SUB r0, r0, #1
+				MOV r6, #1
+				MOV r8, r5
+				MOV r7, #0
+				MOV r4, #0
+				MOV r10, #0
+				B loop_five
+	
+loop_out_two
+				ADD r6, r6, #1
+				SUB r0, r0, #1
+				LDR r5, [sp, #60]
+				MOV r4, #0
+				MOV r7, #0
+
+loop_five
+				SUB r5, r5, #1
+				LDRB r2, [r0, r7]
+				ADD r4, r4, r2
+				ADD r7, r7, r8
+				ADD r9, r5, r6
+				CMP r9, r8
+				ADDEQ r10, r10, r2
+				CMP r5, #0
+				BNE loop_five
+				CMP r4, r1
+				BNE end_bad
+				CMP r6, r8
+				BNE loop_out_two
+				CMP r10, r1
+				BEQ	end_good
+
 end_bad
 				MOV r12, #0
 				STR r12, [sp, #64]
@@ -448,17 +510,6 @@ end_end
 				POP {r0-r12, PC}
 				
 				ENDP
-
-
-
-
-
-
-
-
-
-
-
 
 
 
