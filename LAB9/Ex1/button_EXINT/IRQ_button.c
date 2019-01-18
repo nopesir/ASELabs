@@ -4,6 +4,8 @@
 #include "lpc17xx.h"
 #include "../led/led.h"
 
+int i;
+int check = 0;
 
 void EINT0_IRQHandler (void)	  
 {
@@ -15,35 +17,49 @@ void EINT0_IRQHandler (void)
 
 void EINT1_IRQHandler (void)	  
 {
-	
-	int i;
 	unsigned int state;
 	state = LPC_GPIO2->FIOSET;
 	
-  LPC_SC->EXTINT = (1 << 1);     /* clear pending interrupt         */
+  if(check) {
+		check = 0;
+	
+	LPC_SC->EXTINT = (1 << 1);     /* clear pending interrupt         */ 
+	return;
+	
+	}
 	
 	if(state == 0x00000080)
 		LPC_GPIO2->FIOPIN = (1 << 0);
 	else
 		LPC_GPIO2->FIOPIN = (state << 1); 
 	
-	for(i = 0; i < 1000; i++);
+	for(i = 0; i < 1000000; i++);
+	i = 0;
+	LPC_SC->EXTINT = (1 << 1);     /* clear pending interrupt         */
+	
+	check = !check;
 }
 
 void EINT2_IRQHandler (void)	  
 {
-	
-	int i;
 	unsigned int state; 
 	state = LPC_GPIO2->FIOSET;
-  LPC_SC->EXTINT = (1 << 2);     /* clear pending interrupt         */ 
-		
+  
+	if(check) {
+		check = 0;
+		LPC_SC->EXTINT = (1 << 2);     /* clear pending interrupt         */ 
+		return;	
+	}
 	if(state == 0x00000001)
 		LPC_GPIO2->FIOPIN = (1 << 7);
 	else
 		LPC_GPIO2->FIOPIN = (state >> 1);  
 	
-	for(i = 0; i < 1000; i++);
+	for(i = 0; i < 1000000; i++);
+	i = 0;
+	LPC_SC->EXTINT = (1 << 2);     /* clear pending interrupt         */ 
+	
+	check = !check;
 }
 
 

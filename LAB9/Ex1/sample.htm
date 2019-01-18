@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\sample.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\sample.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5.03 [Build 76]: Last Updated: Wed Dec 26 10:24:37 2018
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5.03 [Build 76]: Last Updated: Fri Jan 18 14:57:33 2019
 <BR><P>
 <H3>Maximum Stack Usage =          8 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -199,7 +199,7 @@ Global Symbols
 
 <P><STRONG><a name="[68]"></a>__rt_entry_postli_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, rtentry2.o(.ARM.Collect$$rtentry$$0000000C))
 
-<P><STRONG><a name="[45]"></a>__rt_exit</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, rtexit.o(.ARM.Collect$$rtexit$$00000000))
+<P><STRONG><a name="[46]"></a>__rt_exit</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, rtexit.o(.ARM.Collect$$rtexit$$00000000))
 <BR><BR>[Called By]<UL><LI><a href="#[3c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;exit
 </UL>
 
@@ -412,15 +412,14 @@ Global Symbols
 
 <P><STRONG><a name="[6e]"></a>LED_Off</STRONG> (Thumb, 24 bytes, Stack size 0 bytes, funct_led.o(.text), UNUSED)
 
-<P><STRONG><a name="[1f]"></a>EINT0_IRQHandler</STRONG> (Thumb, 22 bytes, Stack size 0 bytes, irq_button.o(.text))
-<BR>[Address Reference Count : 1]<UL><LI> startup_lpc17xx.o(RESET)
+<P><STRONG><a name="[43]"></a>BUTTON_init</STRONG> (Thumb, 102 bytes, Stack size 8 bytes, lib_button.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = BUTTON_init
 </UL>
-<P><STRONG><a name="[20]"></a>EINT1_IRQHandler</STRONG> (Thumb, 42 bytes, Stack size 0 bytes, irq_button.o(.text))
-<BR>[Address Reference Count : 1]<UL><LI> startup_lpc17xx.o(RESET)
+<BR>[Calls]<UL><LI><a href="#[45]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;NVIC_EnableIRQ
 </UL>
-<P><STRONG><a name="[21]"></a>EINT2_IRQHandler</STRONG> (Thumb, 42 bytes, Stack size 0 bytes, irq_button.o(.text))
-<BR>[Address Reference Count : 1]<UL><LI> startup_lpc17xx.o(RESET)
+<BR>[Called By]<UL><LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
+
 <P><STRONG><a name="[6f]"></a>__use_two_region_memory</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, heapauxi.o(.text), UNUSED)
 
 <P><STRONG><a name="[70]"></a>__rt_heap_escrow$2region</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, heapauxi.o(.text), UNUSED)
@@ -428,7 +427,7 @@ Global Symbols
 <P><STRONG><a name="[71]"></a>__rt_heap_expand$2region</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, heapauxi.o(.text), UNUSED)
 
 <P><STRONG><a name="[3c]"></a>exit</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, exit.o(.text))
-<BR><BR>[Calls]<UL><LI><a href="#[45]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_exit
+<BR><BR>[Calls]<UL><LI><a href="#[46]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_exit
 </UL>
 <BR>[Called By]<UL><LI><a href="#[3a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_entry_main
 </UL>
@@ -441,10 +440,6 @@ Global Symbols
 
 <P><STRONG><a name="[73]"></a>__user_perthread_libspace</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, libspace.o(.text), UNUSED)
 
-<P><STRONG><a name="[40]"></a>_sys_exit</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, sys_exit.o(.text))
-<BR><BR>[Called By]<UL><LI><a href="#[3f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_exit_exit
-</UL>
-
 <P><STRONG><a name="[74]"></a>__I$use$semihosting</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, use_no_semi.o(.text), UNUSED)
 
 <P><STRONG><a name="[75]"></a>__use_no_semihosting_swi</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, use_no_semi.o(.text), UNUSED)
@@ -455,14 +450,15 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[43]"></a>BUTTON_init</STRONG> (Thumb, 102 bytes, Stack size 8 bytes, lib_button.o(.text))
-<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = BUTTON_init
+<P><STRONG><a name="[1f]"></a>EINT0_IRQHandler</STRONG> (Thumb, 22 bytes, Stack size 0 bytes, irq_button.o(.text))
+<BR>[Address Reference Count : 1]<UL><LI> startup_lpc17xx.o(RESET)
 </UL>
-<BR>[Calls]<UL><LI><a href="#[46]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;NVIC_EnableIRQ
+<P><STRONG><a name="[20]"></a>EINT1_IRQHandler</STRONG> (Thumb, 102 bytes, Stack size 0 bytes, irq_button.o(.text))
+<BR>[Address Reference Count : 1]<UL><LI> startup_lpc17xx.o(RESET)
 </UL>
-<BR>[Called By]<UL><LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
+<P><STRONG><a name="[21]"></a>EINT2_IRQHandler</STRONG> (Thumb, 102 bytes, Stack size 0 bytes, irq_button.o(.text))
+<BR>[Address Reference Count : 1]<UL><LI> startup_lpc17xx.o(RESET)
 </UL>
-
 <P><STRONG><a name="[37]"></a>__user_setup_stackheap</STRONG> (Thumb, 74 bytes, Stack size 8 bytes, sys_stackheap_outer.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8 + Unknown Stack Size
 <LI>Call Chain = __user_setup_stackheap
@@ -472,11 +468,15 @@ Global Symbols
 </UL>
 <BR>[Called By]<UL><LI><a href="#[36]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_entry_sh
 </UL>
+
+<P><STRONG><a name="[40]"></a>_sys_exit</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, sys_exit.o(.text))
+<BR><BR>[Called By]<UL><LI><a href="#[3f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_exit_exit
+</UL>
 <P>
 <H3>
 Local Symbols
 </H3>
-<P><STRONG><a name="[46]"></a>NVIC_EnableIRQ</STRONG> (Thumb, 24 bytes, Stack size 0 bytes, lib_button.o(.text))
+<P><STRONG><a name="[45]"></a>NVIC_EnableIRQ</STRONG> (Thumb, 24 bytes, Stack size 0 bytes, lib_button.o(.text))
 <BR><BR>[Called By]<UL><LI><a href="#[43]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BUTTON_init
 </UL>
 <P>
