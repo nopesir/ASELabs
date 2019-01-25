@@ -14,7 +14,7 @@ void EINT0_IRQHandler (void)
 {
 	bounce = LPC_TIM1->TC;
 	
-	if(bounce - bounce2 < 10000000) {
+	if(bounce - bounce2 < 5000) {
 		LPC_SC->EXTINT = (1 << 0);     /* clear pending interrupt         */
 		return;
 	}
@@ -74,7 +74,7 @@ void EINT1_IRQHandler (void)
 {
 	bounce = LPC_TIM1->TC;
 	
-	if(bounce - bounce2 < 10000000) {
+	if(bounce - bounce2 < 5000) {
 		LPC_SC->EXTINT = (1 << 1);     /* clear pending interrupt         */
 		return;
 	}
@@ -130,7 +130,7 @@ void EINT2_IRQHandler (void)
 {
 	bounce = LPC_TIM1->TC;
 	
-	if(bounce - bounce2 < 10000000) {
+	if(bounce - bounce2 < 5000) {
 		LPC_SC->EXTINT = (1 << 2);     /* clear pending interrupt         */
 		return;
 	}

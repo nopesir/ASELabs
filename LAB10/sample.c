@@ -23,7 +23,7 @@ int main (void) {
 	SystemInit();  												/* System Initialization (i.e., PLL)   */
   LED_init();                           /* LED Initialization                  */
   BUTTON_init();												/* BUTTON Initialization               */
-	init_timer(0,0x023C3460);							/* TIMER0 Initialization to 25MHz*1.5s 0x00103460 0x023C3460 */		
+	init_timer(0,0x00103460);							/* TIMER0 Initialization to 25MHz*1.5s 0x00103460 0x023C3460 */		
 	init_timer(1,0xFFFA3460);							/* TIMER1 as random seed 							 */
 	
 	i = 0;

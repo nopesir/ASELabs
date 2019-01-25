@@ -155,13 +155,24 @@ Reset_Handler   PROC
 				BL	fillStack
 				POP {r0,r1}
 				
-				PUSH {r0,r2}
-				BL	fillStack
-				POP {r0,r2}
+;				PUSH {r0,r2}
+;				BL	fillStack
+;				POP {r0,r2}
 				
 				PUSH {r0,r3}
 				BL	fillStack
 				POP {r0,r3}
+
+				PUSH {r1}
+				PUSH {r2}
+				PUSH {r0}
+				BL move1
+				POP {r0}
+				POP {r2}
+				POP {r1}
+				
+				
+				
 				
 stop 			B stop
 
@@ -200,9 +211,69 @@ equal_zero
 				
 return
 				STR r0, [sp, #20]
+				
+				STR r1, [sp, #24]
+				
 				POP {r0-r3,PC}
 				
 				ENDP
+
+
+
+
+move1			PROC
+				
+				PUSH {r0-r5,LR}
+				
+				LDR r1, [sp, #36]
+				LDR r2, [sp, #32]
+				
+				LDMDB r1!, {r3}
+				LDMDB r2!, {r4}
+				
+				CMP r4, #0
+				BEQ change_fromzero
+				
+				CMP r3,r4
+				BLT change		
+				
+				STMIA r1!, {r3}
+				STMIA r2!, {r4}
+				MOV r5, #0
+				STR r5, [sp, #28]
+				B pop_change
+				
+change_fromzero
+				STMIA r2!, {r4}
+				STMIA r2!, {r3}
+				MOV r5, #1
+				STR r5, [sp, #28]
+				B pop_change
+
+change
+				
+				STMIA r2!, {r3}
+				STMIA r2!, {r4}
+				MOV r5, #1
+				STR r5, [sp, #28]
+				
+pop_change				
+				
+				POP {r0-r5,PC}
+				
+				ENDP
+
+
+moveN			PROC
+				
+				
+				
+				
+				
+				
+				
+				ENDP
+
 
 
 ; Dummy Exception Handlers (infinite loops which can be modified)
