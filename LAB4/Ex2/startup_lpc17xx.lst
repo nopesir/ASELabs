@@ -268,13 +268,17 @@ ARM Macro Assembler    Page 5
                                                             lute 
   164 00000020 BF48 426D       NEGMI            res, res    ; value of the sub
   165 00000024         
-  166 00000024 F803 5B01       STRB             res, [areaindex], #1
+  166 00000024 F803 5B01       STRB             res, [areaindex], #1 ; Store it
+                                                             in the correspondi
+                                                            ng cell
   167 00000028         
   168 00000028 B114            CBZ              counter, result
   169 0000002A F104 34FF       ADD              counter, #-1
   170 0000002E E7F2            B                loop
   171 00000030         
-  172 00000030         result
+  172 00000030         result                               ; Do the summation 
+                                                            over the single byt
+                                                            es
   173 00000030 F04F 0500       MOV              res, #0
   174 00000034 F813 CC04       LDRB             r12, [areaindex, #-4]
   175 00000038 4465            ADD              res, res, r12
@@ -319,16 +323,16 @@ ARM Macro Assembler    Page 5
   209 00000056         UsageFault_Handler
                                PROC
   210 00000056                 EXPORT           UsageFault_Handler        [WEAK
-]
-  211 00000056 E7FE            B                .
-  212 00000058                 ENDP
-  213 00000058         SVC_Handler
 
 
 
 ARM Macro Assembler    Page 6 
 
 
+]
+  211 00000056 E7FE            B                .
+  212 00000058                 ENDP
+  213 00000058         SVC_Handler
                                PROC
   214 00000058                 EXPORT           SVC_Handler               [WEAK
 ]
@@ -384,16 +388,16 @@ ARM Macro Assembler    Page 6
 ]
   246 00000060                 EXPORT           SPI_IRQHandler            [WEAK
 ]
-  247 00000060                 EXPORT           SSP0_IRQHandler           [WEAK
-]
-  248 00000060                 EXPORT           SSP1_IRQHandler           [WEAK
-]
 
 
 
 ARM Macro Assembler    Page 7 
 
 
+  247 00000060                 EXPORT           SSP0_IRQHandler           [WEAK
+]
+  248 00000060                 EXPORT           SSP1_IRQHandler           [WEAK
+]
   249 00000060                 EXPORT           PLL0_IRQHandler           [WEAK
 ]
   250 00000060                 EXPORT           RTC_IRQHandler            [WEAK
@@ -449,16 +453,16 @@ ARM Macro Assembler    Page 7
   282 00000060         SPI_IRQHandler
   283 00000060         SSP0_IRQHandler
   284 00000060         SSP1_IRQHandler
-  285 00000060         PLL0_IRQHandler
-  286 00000060         RTC_IRQHandler
-  287 00000060         EINT0_IRQHandler
-  288 00000060         EINT1_IRQHandler
 
 
 
 ARM Macro Assembler    Page 8 
 
 
+  285 00000060         PLL0_IRQHandler
+  286 00000060         RTC_IRQHandler
+  287 00000060         EINT0_IRQHandler
+  288 00000060         EINT1_IRQHandler
   289 00000060         EINT2_IRQHandler
   290 00000060         EINT3_IRQHandler
   291 00000060         ADC_IRQHandler

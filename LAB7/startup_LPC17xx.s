@@ -115,165 +115,183 @@ __Vectors       DCD     __initial_sp              ; Top of Stack
                 AREA    |.ARM.__at_0x02FC|, CODE, READONLY
 CRP_Key         DCD     0xFFFFFFFF
                 ENDIF
-					
-					
-MyArea_size  	EQU		0x000000C8
-				
-				AREA 	MyArea, DATA, READWRITE
-				
-Stack_one_p		SPACE	MyArea_size
 
+stack_size		EQU  200
 
-Stack_two_p		SPACE	MyArea_size
+dischi_da_spostare EQU 3
 
+				AREA 	myarea, DATA, READWRITE
 
-Stack_three_p		SPACE	MyArea_size
-
-
-
-Seq_size		EQU		0x0000000B
-
-				AREA 	Initialise, DATA, READONLY
-					
-Seq_p			DCD		9,6,3,2,1,8,7,0,5,4,0	
-
+				SPACE stack_size
+	
+stack_one		SPACE stack_size
+	
+stack_two		SPACE stack_size
+	
+stack_three		SPACE 1
 
                 AREA    |.text|, CODE, READONLY
 
+seq				DCD 9, 6, 3, 2, 1, 8, 7, 0, 5, 4, 0 
 
 ; Reset Handler
 
 Reset_Handler   PROC
                 EXPORT  Reset_Handler             [WEAK]
 				
-				LDR r0, =Seq_p
-				LDR r1, =Stack_one_p
-				LDR r2, =Stack_two_p
-				LDR r3, =Stack_three_p
+				LDR	R0, =seq			
+SP1 			RN R1
+SP2 			RN R2
+SP3 			RN R3
+				LDR SP1, =stack_one
+				LDR SP2, =stack_two
+				LDR SP3, =stack_three
 				
-				PUSH {r0,r1}
-				BL	fillStack
-				POP {r0,r1}
+				PUSH{R0, SP1}
+				BL fillStack
+				POP {R0, SP1}
 				
-;				PUSH {r0,r2}
-;				BL	fillStack
-;				POP {r0,r2}
+				PUSH{R0, SP2}
+				BL fillStack
+				POP {R0, SP2}
 				
-				PUSH {r0,r3}
-				BL	fillStack
-				POP {r0,r3}
-
-				PUSH {r1}
-				PUSH {r2}
-				PUSH {r0}
+				PUSH{R0, SP3}
+				BL fillStack
+				POP {R0, SP3}
+				
+				PUSH{SP1}
+				PUSH{SP2}
+				PUSH{R4}
 				BL move1
-				POP {r0}
-				POP {r2}
-				POP {r1}
+				POP{R4}
+				POP{SP2}
+				POP{SP1}
 				
+				LDR	R5, =dischi_da_spostare
 				
+				PUSH{SP1, SP2, SP3, R5}
+				BL moveN
+				POP{SP1, SP2, SP3, R5}
 				
-				
-stop 			B stop
 
+stop 			B stop
                 ENDP
 					
-					
-					
-					
-fillStack		PROC
-				
-				PUSH {r0-r3,LR}
-				
-				LDR r0, [sp, #20]
-				LDR r1, [sp, #24]
-				
-loop			
-				LDR r2, [r0], #4
-				LDMDB r1!, {r3}
-				
-				CMP r2, #0
-				BEQ equal_zero
-				CMP r3,#0
-				BEQ go_on
-				CMP r2,r3
-				BHI revert
-go_on				
-				STMIA r1!, {r3}
-				STMIA r1!, {r2}
-				B loop
-				
-revert				
-
-				ADD r0, r0, #-4
-equal_zero
-				STMIA r1!, {r3}
-				
-return
-				STR r0, [sp, #20]
-				
-				STR r1, [sp, #24]
-				
-				POP {r0-r3,PC}
-				
+fillStack 		PROC
+				PUSH{R0-R12, LR}
+				LDR R0, [SP, #56]		;SEQ
+				LDR R1, [SP, #60]		;STACK POINTER
+				LDR R2, [R0], #4
+				CMP R2, #0
+				BEQ	fine_zero
+label			STMFD R1!, {R2}
+				MOV R3, R2				;r3 used to memoryse the extracted before number and do a comparison
+				LDR R2, [R0], #4
+				CMP R2, #0
+				BEQ	fine_zero
+				CMP R2, R3
+				BGT fine
+				B label
+fine			SUB R0, R0, #4			; decrease the pointer to the sequence
+										; if I stopped is because the next element is greater than the previous one,
+										; otherwise if it is zero it is not necessary to decrease
+fine_zero		STR R0, [SP, #56]		;SEQ
+				STR R1, [SP, #60]		;STACK POINTER
+				POP{R0-R12, PC}
 				ENDP
-
-
-
 
 move1			PROC
+				PUSH{R0-R12, LR}
+				LDR R0, [SP, #56]		;return value
+				LDR R2, [SP, #60]		;Stack pointer 2
+				LDR R1, [SP, #64]		;Stack pointer 1
 				
-				PUSH {r0-r5,LR}
+				LDMFD R1!, {R3}			; last element inserted in stack1
+				LDMFD R2, {R4}			; last element inserted in stack2, if no element inserted it would be 0
+				CMP R4, #0
+				BEQ sposta
+				CMP R4, R3
+				MOVLE R0, #0
+				BLE fine2		
 				
-				LDR r1, [sp, #36]
-				LDR r2, [sp, #32]
-				
-				LDMDB r1!, {r3}
-				LDMDB r2!, {r4}
-				
-				CMP r4, #0
-				BEQ change_fromzero
-				
-				CMP r3,r4
-				BLT change		
-				
-				STMIA r1!, {r3}
-				STMIA r2!, {r4}
-				MOV r5, #0
-				STR r5, [sp, #28]
-				B pop_change
-				
-change_fromzero
-				STMIA r2!, {r4}
-				STMIA r2!, {r3}
-				MOV r5, #1
-				STR r5, [sp, #28]
-				B pop_change
-
-change
-				
-				STMIA r2!, {r3}
-				STMIA r2!, {r4}
-				MOV r5, #1
-				STR r5, [sp, #28]
-				
-pop_change				
-				
-				POP {r0-r5,PC}
-				
+sposta			STMFD R2!, {R3}
+				MOV R0, #1
+fine2
+				STR R0, [SP, #56]		;return value
+				STR R2, [SP, #60]		;Stack pointer 2
+				STR R1, [SP, #64]		;Stack pointer 1
+				POP{R0-R12, PC}
 				ENDP
-
+					
 
 moveN			PROC
+				PUSH{R0-R12, LR}
+				LDR R0, [SP, #56]		;stack start
+				LDR R1, [SP, #60]		;Stack end
+				LDR R2, [SP, #64]		;stack bridge
+				LDR R3, [SP, #68]		;number of elements to be moved
 				
+N				RN R3
+				SUB R6, N, #1
+N1				RN	R6
+M				RN R4 					;number of movements done
+X				RN R0
+Y				RN R1
+Z				RN R2
+				MOV M, #0
+				CMP N, #1
+				BNE	els
 				
+				PUSH{X}
+				PUSH{Y}
+				PUSH{R5}
+				BL move1
+				POP{R5}
+				POP{Y}
+				POP{X}
 				
+				ADD M, M, R5
+				B fine3
+els	
+				PUSH{N1}
+				PUSH{Y}
+				PUSH{Z}
+				PUSH{X}
+				BL moveN
+				POP{X}
+				POP{Z}
+				POP{Y}
+				POP{R7}
+				ADD M, M, R7
 				
+				PUSH{X}
+				PUSH{Y}
+				PUSH{R5}
+				BL move1
+				POP{R5}
+				POP{Y}
+				POP{X}
 				
-				
-				
+				CMP R5, #0
+				BEQ fine3
+				ADD M, M, #1
+				PUSH{N1}
+				PUSH{X}
+				PUSH{Y}
+				PUSH{Z}
+				BL moveN
+				POP{Z}
+				POP{Y}
+				POP{X}
+				POP{R8}
+				ADD M, M, R8
+fine3
+				STR R0, [SP, #56]		;stack start
+				STR R1, [SP, #60]		;Stack end
+				STR R2, [SP, #64]		;stack bridge
+				STR R3, [SP, #68]		;number of movements done
+				POP{R0-R12, PC}
 				ENDP
-
 
 
 ; Dummy Exception Handlers (infinite loops which can be modified)
